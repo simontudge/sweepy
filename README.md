@@ -1,2 +1,2 @@
 # sweepy
-Python module for automated parameter sweeping of modules
+Python module for automated parameter sweeping of modles
