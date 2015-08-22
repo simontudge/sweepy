@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle, os, sys, warnings, time
 from itertools import product
+import seaborn
 
 def _check_directory( directory, ensure_dir ):
 	"""
@@ -87,7 +88,8 @@ def sweep_func( func, sweep_params, fixed_params = None, output_directory = None
 	elif total_sweep_params == 2:
 		#Make a heat map
 		plt.figure()
-		plt.imshow( data.T )
+		extent = [ sweep_params[0][1], sweep_params[0][2], sweep_params[1][1], sweep_params[1][2] ]
+		plt.imshow( data.T, interpolation = 'nearest', origin = 'lower', extent = extent, aspect = 'auto' )
 		plt.xlabel( param_names[0] )
 		plt.ylabel( param_names[1] )
 		if not output_directory:
