@@ -1,0 +1,13 @@
+Allow the sweep_fn to handle mutltiple outputs, and offer the option of ignoring some outputs.
+
+More sensible checking of inputs to stop long time waisting sesions
+
+Allow sweep class interface, basically wrap the class into a funcion and send to sweep function.
+
+Allow for graphical output of more than 3 sweep parameters, by outputting mutlpie graphs
+
+Change the graphical output to be prettier by default
+
+More exciting examples (the ones I have are a bit boring)
+
+Sort out imshow
