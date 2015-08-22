@@ -11,3 +11,5 @@ Change the graphical output to be prettier by default
 More exciting examples (the ones I have are a bit boring)
 
 Sort out imshow
+
+Add the option of repeating multiple times (for stochastic modles)
