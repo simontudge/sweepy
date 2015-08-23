@@ -2,8 +2,10 @@ Allow the sweep_fn to handle mutltiple outputs, and offer the option of ignoring
 
 More sensible checking of inputs to stop long time waisting sesions.
 
-Allow for graphical output of more than 3 sweep parameters, by outputting multiple graphs
-
 More exciting examples (the ones I have are a bit boring)
 
-Add the option of repeating multiple times (for stochastic models)
+Much more detail on the readme
+
+use six to make this module compatable with python2
+
+sort out class sweep naming of function

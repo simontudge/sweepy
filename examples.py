@@ -23,16 +23,16 @@ class x_plus_random():
 		self.lam = lam
 
 	def go(self):
-		self.A = random.normal( self.x, self.lam ) 
+		self.A = random.normal( self.x, self.lam )
 
 if __name__ == "__main__":
 
 	#Run all the examples
 
-	# sweepy.sweep_func( product, [ ['x', 0, 5, 10], ['y',1,20,3], ['z',8,20,12] ], fixed_params = {'w':12}, output_directory= "sample_outputs", ensure_dir = True)
+	sweepy.sweep_func( product, [ ['x', 0, 5, 10], ['y',1,20,3], ['z',8,20,12] ], fixed_params = {'w':12}, output_directory= "sample_outputs", ensure_dir = True)
 
-	# sweepy.sweep_func( math_func1, [ ['x', 0, 5, 10] ], output_directory = "sample_outputs2", ensure_dir = True)
+	sweepy.sweep_func( math_func1, [ ['x', 0, 5, 10] ], output_directory = "sample_outputs2", reps = 100, ensure_dir = True)
 
-	# sweepy.sweep_func( math_func2, [ ['x', -2, 2, 100], ['y', -5, 5, 100] ] )
+	sweepy.sweep_func( math_func2, [ ['x', -2, 2, 100], ['y', -5, 5, 100] ], output_directory = "test3", ensure_dir = True  )
 
-	f = sweepy.sweep_class( x_plus_random, [ ['x',-1,1,100], ['lam', .1, 2, 100 ] ], output_variable = 'A', output_directory = "Example_class1", ensure_dir = True)
+	d = sweepy.sweep_class( x_plus_random, [ ['x',-1,1,100], ['lam', .1, 2, 100 ] ], reps = 10, output_variable = 'A', output_directory = 'Example_class1', ensure_dir = True)
