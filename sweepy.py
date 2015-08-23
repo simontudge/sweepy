@@ -208,7 +208,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 		#Pickle dump the actual data
 		pickle.dump( data, open( os.path.join( output_directory, "data.p" ), 'wb' ) )
 
-def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_params = None, go_func_name = 'go' , output_directory = None, ensure_dir = False ):
+def sweep_class( input_class, sweep_params, output_variables, reps = 1, fixed_params = None, go_func_name = 'go' , output_directory = None, ensure_dir = False ):
 	"""
 	Sweeps a model which is defined as a class rather than a funcion.
 
@@ -219,7 +219,7 @@ def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_par
 	and y from 1 to 10 with 20 values Currently you may only have upto two sweep parameters, if one is provided any graphical output
 	is in the form of a single line graph. If two are provided then the output will be a heat map.
 
-	output_variable: in the form of a string, the name of the variable that will be recorded.
+	output_variables: in the form of a string, or list of strings, the name(s) of the variable that will be recorded.
 
 	reps: (default 1) how many times to repeat the parameter sweep, this should only be different from one if you output in non-deterministic.
 
@@ -229,6 +229,10 @@ def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_par
 	can also be None.
 	"""
 
+	#Allow a single string to be passed by putting it in a list
+	if isinstance( output_variables, str ):
+		output_variables = [output_variables]
+	total_outputs = len( output_variables )
 	#This works simply by defining a function which initialises the class performs the setup and returns the vairable in question and then calling sweep_func
 	#on this function
 	def class_as_func( *args, **kwargs ):
@@ -236,11 +240,11 @@ def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_par
 		#Setup the class by calling it's go func if necessasry
 		if go_func_name:
 			exec( "X.{}()".format( go_func_name ) ) in locals()
-		return X.__dict__[ output_variable ]
+		return [ X.__dict__[ ov ] for ov in output_variables ]
 	#Rename the function to have the same name as the class
 	class_as_func.__name__ = input_class.__name__
 
-	return sweep_func( class_as_func, sweep_params, reps = reps, fixed_params = fixed_params, output_directory = output_directory, ensure_dir = ensure_dir  )
+	return sweep_func( class_as_func, sweep_params, record_outputs = [True]*total_outputs, output_names = output_variables, reps = reps, fixed_params = fixed_params, output_directory = output_directory, ensure_dir = ensure_dir  )
 
 
 

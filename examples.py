@@ -31,18 +31,33 @@ class x_plus_random():
 	def go(self):
 		self.A = random.normal( self.x, self.lam )
 
+class XYZ():
+
+	def __init__(self,x,y,z):
+		self.x = x
+		self.y = y
+		self.z = z
+
+	def start(self):
+		self.trig = math.sin(self.x)*math.sin( self.y + self.z )
+		self.random_exponent = self.x**random.random() + self.y**random.random()
+		self.sum = self.x + self.y + self.z
+
+
 if __name__ == "__main__":
 
 	#Run all the examples
 
-	# sweepy.sweep_func( product, [ ['x', 0, 5, 10], ['y',1,20,3], ['z',8,20,12] ], fixed_params = {'w':12}, output_directory= "sample_outputs", ensure_dir = True)
+	sweepy.sweep_func( product, [ ['x', 0, 5, 10], ['y',1,20,3], ['z',8,20,12] ], fixed_params = {'w':12}, output_directory= "sample_outputs", ensure_dir = True)
 
-	# sweepy.sweep_func( math_func1, [ ['x', 0, 5, 10] ], output_directory = "sample_outputs2", reps = 100, ensure_dir = True)
+	sweepy.sweep_func( math_func1, [ ['x', 0, 5, 10] ], output_directory = "sample_outputs2", reps = 100, ensure_dir = True)
 
-	# sweepy.sweep_func( math_func2, [ ['x', -2, 2, 100], ['y', -5, 5, 100] ], output_directory = "test3", ensure_dir = True  )
+	sweepy.sweep_func( math_func2, [ ['x', -2, 2, 100], ['y', -5, 5, 100] ], output_directory = "test3", ensure_dir = True  )
 
-	# sweepy.sweep_class( x_plus_random, [ ['x',-1,1,100], ['lam', .1, 2, 100 ] ], reps = 10, output_variable = 'A', output_directory = 'Example_class1', ensure_dir = True)
+	sweepy.sweep_class( x_plus_random, [ ['x',-1,1,100], ['lam', .1, 2, 100 ] ], output_variables = 'A', reps = 10, output_directory = 'Example_class1', ensure_dir = True)
 
 	sweepy.sweep_func( multi_return, [ [ 'x', -2, 2, 51 ] ], record_outputs = [True,False,True], output_directory = 'multi_test', output_names = ['Straight', 'Cube'], ensure_dir = True )
 
-	# sweepy.sweep_func( multi_multi, [ [ 'x', -2, 5, 100 ] , [ 'y', 0,5,20], ['z', 8, 10, 5] ], record_outputs = [True,True], output_directory = 'multi_multi', ensure_dir = True )
+	sweepy.sweep_func( multi_multi, [ [ 'x', -2, 5, 100 ] , [ 'y', 0,5,20], ['z', 8, 10, 5] ], record_outputs = [True,True], output_directory = 'multi_multi', ensure_dir = True )
+
+	sweepy.sweep_class( XYZ, [ [ 'x', 0, 2, 100 ] , [ 'y' , -1, 1, 20 ] ],  output_variables = ['trig','random_exponent'], reps = 2, fixed_params = {'z':0.6}, go_func_name = 'start' , output_directory = "mulit_class", ensure_dir = True )

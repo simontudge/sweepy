@@ -1,11 +1,7 @@
-Allow the sweep_fn to handle mutltiple outputs, and offer the option of ignoring some outputs.
-
-More sensible checking of inputs to stop long time waisting sesions.
+More sensible checking of inputs to stop long time waisting sessions.
 
 More exciting examples (the ones I have are a bit boring)
 
 Much more detail on the readme
 
 Progress reports
-
-Add multiple outputs to class functionality
