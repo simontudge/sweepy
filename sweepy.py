@@ -197,6 +197,8 @@ def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_par
 		if go_func_name:
 			exec( "X.{}()".format( go_func_name ) ) in locals()
 		return X.__dict__[ output_variable ]
+	#Rename the function to have the same name as the class
+	class_as_func.__name__ = input_class.__name__
 
 	return sweep_func( class_as_func, sweep_params, reps = reps, fixed_params = fixed_params, output_directory = output_directory, ensure_dir = ensure_dir  )
 
