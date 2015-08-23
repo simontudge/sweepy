@@ -1,4 +1,4 @@
-More sensible checking of inputs to stop long time waisting sessions.
+More sensible checking of inputs to stop long time-wasting sessions.
 
 More exciting examples (the ones I have are a bit boring)
 
