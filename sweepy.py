@@ -20,7 +20,7 @@ def _check_directory( directory, ensure_dir ):
 		else:
 			raise FileNotFoundError("Directory '{}' does not exists, you must set ensure_dir = True if you want me to make it for you.".format( directory ) )
 
-def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_directory = None, ensure_dir = False ):
+def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_names = None, output_directory = None, ensure_dir = False ):
 	"""
 	Function for sweeping functions. This is the one to use if the model you wish to sweep is defined as a single function.
 
@@ -40,6 +40,9 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	record_outputs: Which outputs of thefunction to record. Default 'only', this is if you function returns a single numerical output. Otherwise,
 	if the function returns a tuple you can specify which outputs to record via a list of booleans e.g. [True,False,True]. (May be added soon, can specify a
 		list of strings if your function outputs a dictionary.)
+
+	output_names: A list of strings to identify the outputs. This is so that graphs and directories can be labeled appropriately. If None (default) fals back
+	on integer nameing (param1,param2 etc.)
 
 	output_directory: where to output the graphs and data. Options: None (Default) in which case the data will be returned by the function,
 	and the graphs will be shown on screen. Otherwise, a valid path to a directory. The directory must exist if ensure_dir is False,
@@ -94,6 +97,13 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 			total_outputs = sum( record_outputs )
 		except TypeError:
 			raise TypeError("record_outputs must be either the string 'only' or a list of boolenas, got {}".format( record_outputs ) )
+	#Make sure param_names is the correct length, and revert to default if None
+	if output_names:
+		if not len(output_names) == total_outputs:
+			raise ValueError("Length of output_names must be equal to the number of output parameters you wish to record.")
+	else:
+		output_names = [ "param_{}".format(i) for i in range( total_outputs ) ]
+
 
 
 	#Create an empty container in which to put the data
@@ -140,16 +150,18 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 
 	#Loop through each array and output the graph to a seperate file
 	for i,d in enumerate(data):
-
-		#Find the name of the parameter, for now we'll just use the integer
-		output_name = str(i)
+		#Give each output parameter it's own subdiretory
+		if output_directory:
+			path = os.path.join( output_directory, output_names[i] )
+			if not os.path.exists( path ):
+				os.mkdir( path )
 
 		if make_graphs:
 			if total_sweep_params == 3:
 				for i,z in enumerate( value_lists[-1] ):
 					make_heatmap( d[:,:,i] )
 					if output_directory:
-						plt.savefig( os.path.join( output_directory, "{}_{}_{}.png".format( output_name, param_names[-1], z ) ) )
+						plt.savefig( os.path.join( path, "{}_{}.png".format( param_names[0], z ) ) )
 						plt.close()
 				if not output_directory:
 					plt.show()
@@ -160,7 +172,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				if not output_directory:
 					plt.show()
 				else:
-					plt.savefig( os.path.join( output_directory, "{}_{}.png".format( output_name, param_names[0] ) ) )
+					plt.savefig( os.path.join( path, "{}.png".format( param_names[0] ) ) )
 					plt.close()
 			else:
 				#Make a line graph
@@ -172,7 +184,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				if not output_directory:
 					plt.show()
 				else:
-					plt.savefig( os.path.join( output_directory, "{}_{}.png".format( output_name, param_names[0] ) ) )
+					plt.savefig( os.path.join( path, "{}.png".format( param_names[0] ) ) )
 					plt.close()
 
 	#Handle the output of data

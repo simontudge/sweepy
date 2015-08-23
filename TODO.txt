@@ -5,3 +5,7 @@ More sensible checking of inputs to stop long time waisting sesions.
 More exciting examples (the ones I have are a bit boring)
 
 Much more detail on the readme
+
+Progress reports
+
+Add multiple outputs to class functionality
