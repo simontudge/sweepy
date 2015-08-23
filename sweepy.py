@@ -6,7 +6,7 @@ try:
 	#This will make graphs look a bit prettier by default, but is not essential
 	import seaborn
 except ImportError:
-	pass
+	print("Could not find module seaborn, try pip install seaborn for full functionality.")
 
 def _check_directory( directory, ensure_dir ):
 	"""
@@ -83,8 +83,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, output_direct
 		make_graphs = True
 
 	#Create an empty container in which to put the data
-	data_size = param_lengths.copy()
-	data_size.append(reps)
+	data_size = param_lengths + [reps]
 	data = np.empty( tuple( data_size ) )
 	
 	#Create the cartesian product of all our value lists
@@ -105,7 +104,6 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, output_direct
 
 	#Take the mean of the data and reduce the dimention representing the repeats
 	data = np.mean( data, total_sweep_params )
-	print(data)
 
 	end_time = time.strftime("%c")
 
@@ -124,6 +122,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, output_direct
 				make_heatmap( data[:,:,i] )
 				if output_directory:
 					plt.savefig( os.path.join( output_directory, "{}_{}.png".format( param_names[-1], z ) ) )
+					plt.close()
 			if not output_directory:
 				plt.show()
 
@@ -134,19 +133,19 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, output_direct
 				plt.show()
 			else:
 				plt.savefig( os.path.join( output_directory, param_names[0] + ".png" ) )
-				#plt.close()
+				plt.close()
 		else:
 			#Make a line graph
 			plt.figure()
 			plt.plot( value_lists[0], data, 'o-' )
 			plt.xlabel( param_names[0] )
 			plt.ylabel( "{}({})".format(func.__name__, param_names[0]) )
-		#Either display or save the graph(s)	
-		if not output_directory:
-			plt.show()
-		else:
-			plt.savefig( os.path.join( output_directory, param_names[0] + ".png" ) )
-			plt.close()
+			#Either display or save the graph(s)	
+			if not output_directory:
+				plt.show()
+			else:
+				plt.savefig( os.path.join( output_directory, param_names[0] + ".png" ) )
+				plt.close()
 
 	#Handle the output of data
 	if not output_directory:
@@ -190,13 +189,13 @@ def sweep_class( input_class, sweep_params, output_variable, reps = 1, fixed_par
 	can also be None.
 	"""
 
-	#This works simply by defining a function which initialises the class perfomrs the setup and returns the vairable in question and then calling sweep_func
+	#This works simply by defining a function which initialises the class performs the setup and returns the vairable in question and then calling sweep_func
 	#on this function
 	def class_as_func( *args, **kwargs ):
 		X = input_class( *args, **kwargs )
 		#Setup the class by calling it's go func if necessasry
 		if go_func_name:
-			exec( "X.{}()".format( go_func_name ) )
+			exec( "X.{}()".format( go_func_name ) ) in locals()
 		return X.__dict__[ output_variable ]
 
 	return sweep_func( class_as_func, sweep_params, reps = reps, fixed_params = fixed_params, output_directory = output_directory, ensure_dir = ensure_dir  )
