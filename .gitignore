@@ -1,0 +1,14 @@
+##Files and directories that git will ignore
+
+__pycache__/
+
+##Any pickled outputs
+*.p
+*.pkl
+
+##Graphical outputs
+*.png
+
+##Outputs from the example classes
+Example*/
+example*/
