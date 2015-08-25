@@ -21,45 +21,71 @@ def _check_directory( directory, ensure_dir ):
 			raise FileNotFoundError("Directory '{}' does not exists, you must set ensure_dir = True if you want me to make it for you.".format( directory ) )
 
 def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_names = None, output_directory = None, ensure_dir = False ):
-	"""
+	r"""
 	Function for sweeping functions. This is the one to use if the model you wish to sweep is defined as a single function.
 
-	Inputs:
+	Parameters:
+	-----------
 
-	func: the function you wish to sweep
+	func : callable
+		A function that returns at least one numeric variable 
+	
+	sweep_params : list of lists of type [str, float, float, int] 
+		a list of parameters that the function takes, which you wish to sweep. Example input [ ['x',0,1,10] ] sweeps
+		the parameter x from 0 to 1 with 10 values. [ [ 'x', 0, 5, 100 ], [ 'y', 1, 10, 20 ] ] sweeps x from 0 to 5 with 100 values,
+		and y from 1 to 10 with 20 values. Can be any number of sweep parameters, but graphical output is limited to three.
 
-	sweep_params: a list of parameters which the function takes, that you wish to sweep. Example input [ ['x',0,1,10] ] sweeps
-	the parameter x from 0 to 1 with 10 values. [ [ 'x', 0, 5, 100 ], [ 'y', 1, 10, 20 ] ] sweeps x from 0 to 5 with 100 values,
-	and y from 1 to 10 with 20 values Currently you may only have upto two sweep parameters, if one is provided any graphical output
-	is in the form of a single line graph. If two are provided then the output will be a heat map.
+	reps: int (default 1), optional
+		How many times to repeat the parameter sweep, this should only be different from one if you output in non-deterministic.
 
-	reps: (default 1) how many times to repeat the parameter sweep, this should only be different from one if you output in non-deterministic.
+	fixed_params : { None, dict }, optional
+		(default None) this is a dictionary of additional constant parameters to be passed to the function. E.g. {temp = 12, velocity = 26}
 
-	fixed_params: this is a dictionary of additional constant parameters to be passed to the function.
+	record_outputs : {'only', list of booleans}, optional
+		Which outputs of the function to record. Either a list of booleans or the string 'only', this is if you function returns a single numerical output. Otherwise,
+		if the function returns a tuple you can specify which outputs to record via a list of booleans e.g. [True,False,True].
 
-	record_outputs: Which outputs of thefunction to record. Default 'only', this is if you function returns a single numerical output. Otherwise,
-	if the function returns a tuple you can specify which outputs to record via a list of booleans e.g. [True,False,True]. (May be added soon, can specify a
-		list of strings if your function outputs a dictionary.)
+	output_names : {None, list of strings}, optional.
+		A list of strings to identify the outputs. This is so that graphs and directories can be labeled appropriately. If None (default) falls back
+		on integer naming (param1, param2 etc.)
 
-	output_names: A list of strings to identify the outputs. This is so that graphs and directories can be labeled appropriately. If None (default) fals back
-	on integer nameing (param1,param2 etc.)
+	output_directory : {None,valid path to directory}, optional
+		where to output the graphs and data. Options: None (Default) in which case the data will be returned by the function,
+		and the graphs will be shown on screen. Otherwise, a valid path to a directory. The directory must exist if ensure_dir is False,
+		otherwise this function can create it if ensure dir = True.
 
-	output_directory: where to output the graphs and data. Options: None (Default) in which case the data will be returned by the function,
-	and the graphs will be shown on screen. Otherwise, a valid path to a directory. The directory must exist if ensure_dir is False,
-	otherwise this function can create it if ensure dir = True.
+	ensure_dir {False,True} :
+		Whether or not to create the directory if it doesn't exist. If this is set to false and the directory does not exist then FileNotFoundError will be raised
+
+	Returns
+	-------
 
 	Output of graphs will be single line graphs if there is a single sweep parameter. If two are given then this will be a heatmap. If three
-	then the output will be a series of heatmaps, with different values of the third input used to identify the graphs. In theory this could
-	be extened to include even higher numbers of input parameters, but three is currently the maximum. The function will also only allow 128
-	graphs to be produced at one time, this is to avoid acciendtly trying to create a phenomonal amount of graphs.
+	then the output will be a series of heatmaps, with different values of the third input used to identify the graphs. Each returned output
+	will be put in a seperate subfolder labelled with the name of the output file.
 
-	ensure_dir True(default)|False. Whether or not to create the directory if it doesn't exist. 
+	In the parent directory will make a text file called README.txt with information on the parameters used to generate this data.
+	
+	All data will be sent to a pickle file in the form of a list of numpy arrays. Each element of the list represents one of the output variables. The
+	dimension of the arrays will be the number of sweep parameters plus one for the repeats.
 
-	See also: sweep_class
+	The function will also only allow 128 graphs to be produced at one time, this is to avoid accidently trying to create a phenomonal amount of graphs.
+
+	If output directory is None then the graphs will be displayed rather than output to file and the data returned rather than pickled.
+
+	Example Use
+	-----------
+
+	See examples.py
+
+	See also
+	--------
+
+	sweep_class: wraps this functionality for use in models defined as classes rather than functions.
 	"""
 
 	#Store the start time of the run
-	start_time = now = time.strftime("%c")
+	start_time = time.strftime("%c")
 
 	#Do some basic checking of input parameters:
 	if not callable(func):
@@ -209,24 +235,56 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 		pickle.dump( data, open( os.path.join( output_directory, "data.p" ), 'wb' ) )
 
 def sweep_class( input_class, sweep_params, output_variables, reps = 1, fixed_params = None, go_func_name = 'go' , output_directory = None, ensure_dir = False ):
-	"""
-	Sweeps a model which is defined as a class rather than a funcion.
+	r"""Sweeps a model which is defined as a class rather than a funcion.
 
-	Inputs: input_class, a class representing the model to be sweeped.
+	sweep_params : list of lists of type [str, float, float, int] 
+		a list of parameters that the function takes, which you wish to sweep. Example input [ ['x',0,1,10] ] sweeps
+		the parameter x from 0 to 1 with 10 values. [ [ 'x', 0, 5, 100 ], [ 'y', 1, 10, 20 ] ] sweeps x from 0 to 5 with 100 values,
+		and y from 1 to 10 with 20 values. Can be any number of sweep parameters, but graphical output is limited to three.
 
-	sweep_params: a list of parameters which the function takes, that you wish to sweep. Example input [ ['x',0,1,10] ] sweeps
-	the parameter x from 0 to 1 with 10 values. [ [ 'x', 0, 5, 100 ], [ 'y', 1, 10, 20 ] ] sweeps x from 0 to 5 with 100 values,
-	and y from 1 to 10 with 20 values Currently you may only have upto two sweep parameters, if one is provided any graphical output
-	is in the form of a single line graph. If two are provided then the output will be a heat map.
+	reps: int (default 1), optional
+		How many times to repeat the parameter sweep, this should only be different from one if you output in non-deterministic.
 
-	output_variables: in the form of a string, or list of strings, the name(s) of the variable that will be recorded.
+	fixed_params : { None, dict }, optional
+		(default None) this is a dictionary of additional constant parameters to be passed to the function. E.g. {temp = 12, velocity = 26}
 
-	reps: (default 1) how many times to repeat the parameter sweep, this should only be different from one if you output in non-deterministic.
+	output_names : {None, list of strings}, optional.
+		A list of strings to identify which outputs to look for the outputs. Must be a value of the class once go_func_name is called.
 
-	fixed_params: this is a dictionary of additional constant parameters to be passed to the function.
+	output_directory : {None,valid path to directory}, optional
+		where to output the graphs and data. Options: None (Default) in which case the data will be returned by the function,
+		and the graphs will be shown on screen. Otherwise, a valid path to a directory. The directory must exist if ensure_dir is False,
+		otherwise this function can create it if ensure dir = True.
 
-	go_func_name: the name of the function to call to set the model running, default 'go'. i.e. C = myClass(), C.go()
-	can also be None.
+	go_func_name : {str, None}
+		the name of the function to call to set the model running, default 'go'. i.e. C = myClass(), C.go()
+		can also be None if the __init__ method of the class defines all necessary values.
+	
+	Returns
+	-------
+
+	Output of graphs will be single line graphs if there is a single sweep parameter. If two are given then this will be a heatmap. If three
+	then the output will be a series of heatmaps, with different values of the third input used to identify the graphs. Each returned output
+	will be put in a seperate subfolder labelled with the name of the output file.
+
+	In the parent directory will make a text file called README.txt with information on the parameters used to generate this data.
+	
+	All data will be sent to a pickle file in the form of a list of numpy arrays. Each element of the list represents one of the output variables. The
+	dimension of the arrays will be the number of sweep parameters plus one for the repeats.
+
+	The function will also only allow 128 graphs to be produced at one time, this is to avoid accidently trying to create a phenomonal amount of graphs.
+
+	If output directory is None then the graphs will be displayed rather than output to file and the data returned rather than pickled.
+
+	Example Use
+	-----------
+
+	See examples.py
+
+	See also
+	--------
+
+	sweep_func : sweep_class essentially turns you class into a function and send to sweep_func 
 	"""
 
 	#Allow a single string to be passed by putting it in a list
