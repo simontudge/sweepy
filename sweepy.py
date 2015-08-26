@@ -141,6 +141,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	#Create the cartesian product of the indices of the values
 	ranges = [ range(l) for l in param_lengths ]
 	indicies = list( product(*ranges) )
+	total_runs_needed = len(indicies)*reps
 	for rep in range(reps):
 		for index, values in zip( indicies, products ):
 			#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to

@@ -12,8 +12,8 @@ Automated sweeping of models that are defined as either a single function via `s
 
 ##Example Use
 
-import sweepy
-sweepy.sweep_class( myCoolModel, input ... )
+>>> import sweepy
+>>> sweepy.sweep_class( myCoolModel, input ... )
 will result in ...
 
 ##Instructions for install

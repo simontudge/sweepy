@@ -5,6 +5,7 @@ __pycache__/
 ##Any pickled outputs
 *.p
 *.pkl
+*.pickle
 
 ##Graphical outputs
 *.png
@@ -12,3 +13,5 @@ __pycache__/
 ##Outputs from the example classes
 Example*/
 example*/
+
+*.pyc
