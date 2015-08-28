@@ -163,7 +163,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 					data[i][index][rep] = r
 
 	#Take the mean of each array of in data thus reducing the dimension representing the repeats
-	data = [ np.mean( d, total_sweep_params ) for d in data ]
+	data_meaned = [ np.mean( d, total_sweep_params ) for d in data ]
 
 	end_time = time.strftime("%c")
 
@@ -176,7 +176,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 		plt.colorbar()
 
 	#Loop through each array and output the graph to a seperate file
-	for i,d in enumerate(data):
+	for i,d in enumerate( data_meaned ):
 		#Give each output parameter it's own subdiretory
 		if output_directory:
 			path = os.path.join( output_directory, output_names[i] )
@@ -192,6 +192,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 						plt.close()
 				if not output_directory:
 					plt.show()
+					pl.close()
 
 			elif total_sweep_params == 2:
 				#Make a heat map
