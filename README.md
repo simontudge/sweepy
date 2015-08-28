@@ -19,8 +19,8 @@ Frequently in scientific computing it is necessary to "sweep" through the parame
 
 ##Instructions
 
-Clone the module and add the directory to you PYTHONPATH. Run examples.py, this should create three folders in the working
-directory as sample outputs. Reading the doc strings of sweep_func and sweep_class, as well as inspecting the examples module
+Clone the module and add the directory to you PYTHONPATH. Run `examples.py`, this should create three folders in the working
+directory as sample outputs. Reading the doc strings of `sweep_func` and `sweep_class`, as well as inspecting the examples module
 should be all that is needed to start sweeping.
 
 ##Planned work
