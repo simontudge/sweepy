@@ -1,4 +1,0 @@
-numpy
-pickle
-matplotlib
-seaborn
