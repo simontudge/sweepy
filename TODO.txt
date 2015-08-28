@@ -1,9 +1,3 @@
 More sensible checking of inputs to stop long time-wasting sessions.
 
-Much more detail on the readme
-
 Progress reports
-
-sort out closing of all graphs, seems to create some slowdown!
-
-Issue: does pickling save pre or post averaging
