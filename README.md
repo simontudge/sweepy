@@ -21,6 +21,7 @@ care of all these things, and allows you to perform them all in a single line of
 - [ ] Creates a README
 - [ ] Output any number of variables, each stored in it's own subdirectory
 - [ ] Creates the directory structure for you
+- [ ] Compatible with either python 2 or 3
 
 ##Instructions
 
