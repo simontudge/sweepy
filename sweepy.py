@@ -82,6 +82,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	--------
 
 	sweep_class: wraps this functionality for use in models defined as classes rather than functions.
+
 	"""
 
 	#Store the start time of the run
@@ -141,9 +142,12 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	#Create the cartesian product of the indices of the values
 	ranges = [ range(l) for l in param_lengths ]
 	indicies = list( product(*ranges) )
-	total_runs_needed = len(indicies)*reps
+	total_runs_needed = float( len(indicies)*reps )
+	run_number = 1
 	for rep in range(reps):
 		for index, values in zip( indicies, products ):
+			percentage_done = run_number/total_runs_needed*100
+			sys.stdout.write( "\r" + "%.d"%percentage_done + r"%" )
 			#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to
 			#pass parameter values in an order other than the function accepts.
 			parameter_dict = { n:v for n,v in zip( param_names, values ) }
@@ -162,7 +166,9 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				for i,r in enumerate(relevent_outputs):
 					data[i][index][rep] = r
 
-	#Take the mean of each array of in data thus reducing the dimension representing the repeats
+			run_number += 1
+
+	#Take the mean of each array in data thus reducing the dimension representing the repeats
 	data_meaned = [ np.mean( d, total_sweep_params ) for d in data ]
 
 	end_time = time.strftime("%c")
@@ -286,7 +292,8 @@ def sweep_class( input_class, sweep_params, output_variables, reps = 1, fixed_pa
 	See also
 	--------
 
-	sweep_func : sweep_class essentially turns you class into a function and send to sweep_func 
+	sweep_func : sweep_class essentially turns you class into a function and send to sweep_func
+	
 	"""
 
 	#Allow a single string to be passed by putting it in a list
