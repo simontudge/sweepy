@@ -1,3 +1,4 @@
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle, os, sys, warnings, time
@@ -147,7 +148,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	for rep in range(reps):
 		for index, values in zip( indicies, products ):
 			percentage_done = run_number/total_runs_needed*100
-			sys.stdout.write( "\r" + "%.d"%percentage_done + r"%" )
+			print( "%.d"%percentage_done + r"%", end = "\r" )
 			#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to
 			#pass parameter values in an order other than the function accepts.
 			parameter_dict = { n:v for n,v in zip( param_names, values ) }
