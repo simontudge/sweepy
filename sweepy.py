@@ -175,11 +175,12 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	end_time = time.strftime("%c")
 
 	#Handle graphical output:
-	def make_heatmap(data):
+	def make_heatmap( data, title  ):
 		extent = [ sweep_params[0][1], sweep_params[0][2], sweep_params[1][1], sweep_params[1][2] ]
 		plt.imshow( data.T, interpolation = 'nearest', origin = 'lower', extent = extent, aspect = 'auto' )
 		plt.xlabel( param_names[0] )
 		plt.ylabel( param_names[1] )
+		plt.title( title )
 		plt.colorbar()
 
 	#Loop through each array and output the graph to a seperate file
@@ -193,7 +194,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 		if make_graphs:
 			if total_sweep_params == 3:
 				for i,z in enumerate( value_lists[-1] ):
-					make_heatmap( d[:,:,i] )
+					make_heatmap( d[:,:,i], title = output_names[i] )
 					if output_directory:
 						plt.savefig( os.path.join( path, "{}_{}.png".format( param_names[0], z ) ) )
 						plt.close()
@@ -203,7 +204,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 
 			elif total_sweep_params == 2:
 				#Make a heat map
-				f = make_heatmap( d )
+				f = make_heatmap( d, title = output_names[i]  )
 				if not output_directory:
 					plt.show()
 				else:
