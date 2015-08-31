@@ -215,7 +215,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				plt.figure()
 				plt.plot( value_lists[0], d, 'o-' )
 				plt.xlabel( param_names[0] )
-				plt.ylabel( "{}({})".format(func.__name__, param_names[0]) )
+				plt.ylabel( output_names[i] )
 				#Either display or save the graph(s)	
 				if not output_directory:
 					plt.show()
