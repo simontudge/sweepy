@@ -2,6 +2,7 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle, os, sys, warnings, time
+from tqdm import tqdm, trange
 from itertools import product
 try:
 	#This will make graphs look a bit prettier by default, but is not essential
@@ -143,12 +144,8 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	#Create the cartesian product of the indices of the values
 	ranges = [ range(l) for l in param_lengths ]
 	indicies = list( product(*ranges) )
-	total_runs_needed = float( len(indicies)*reps )
-	run_number = 1
-	for rep in range(reps):
+	for rep in trange(reps):
 		for index, values in zip( indicies, products ):
-			percentage_done = run_number/total_runs_needed*100
-			print( "%.d"%percentage_done + r"%", end = "\r" )
 			#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to
 			#pass parameter values in an order other than the function accepts.
 			parameter_dict = { n:v for n,v in zip( param_names, values ) }
@@ -166,8 +163,6 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				#And put them in each data array
 				for i,r in enumerate(relevent_outputs):
 					data[i][index][rep] = r
-
-			run_number += 1
 
 	#Take the mean of each array in data thus reducing the dimension representing the repeats
 	data_meaned = [ np.mean( d, total_sweep_params ) for d in data ]
