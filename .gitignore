@@ -15,3 +15,5 @@ Example*/
 example*/
 
 *.pyc
+
+.DS_store

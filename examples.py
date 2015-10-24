@@ -20,6 +20,7 @@ def almost_square( x, sig ):
 class survival_of_the_largest():
 	"""
 	Class defining a model which evolves integers. An integers fitness is defined as how large it is.
+	
 	"""
 
 	def __init__( self, pop_size, mu, gens ):
@@ -39,7 +40,7 @@ class survival_of_the_largest():
 		self.gens = gens
 		self.population = random.choice( list( range( 100 ) ) , self.pop_size )
 
-	def mutate( individual ):
+	def mutate( self, individual ):
 		"""
 		Randomly mutates an individual with probability mu
 
@@ -65,8 +66,7 @@ class survival_of_the_largest():
 			#choose the individuals who will reproduce
 			new_pop = random.choice( self.population, p = fitness, replace = True, size = self.pop_size )
 
-			self.population = new_pop
-			#list( map( self.mutate, new_pop ) )
+			self.population = list( map( self.mutate, new_pop ) )
 
 		##The fitest indivdual
 		self.max = max( self.population )
@@ -85,11 +85,11 @@ if __name__ == "__main__":
 
 	#Run all the examples
 
-	##Lets run almost_square with a fixed value of sigma = 0.05 and sweep over x from 0 to 2 in steps of 100, taking the mean of 5 runs
+	##Lets run almost_square with a fixed value of sigma = 0.2 and sweep over x from 0 to 2 in steps of 100, taking the mean of 5 runs
 	sweepy.sweep_func( almost_square, [ ['x', 0, 2, 100] ], fixed_params = {'sig': 0.2}, reps = 5, output_directory = 'example_almost_square', ensure_dir = True )
 
-	##Let's run almost square, but this time sweeping over sig as well. Have x run from 0 to 2 in steps of 1000 and sigma
-	#from 0.05 to 1 in steps of 100, and this time don't repeat and give the output parameter a more descriptive name, so that
+	##Let's run almost square, but this time sweeping over sig as well. Have x run from 0.2 to 1.2 in steps of 1000 and sigma
+	#from 0.05 to .5 in steps of 100, and this time don't repeat and give the output parameter a more descriptive name, so that
 	##sweepy can name the subdirectories.
 	sweepy.sweep_func( almost_square, [ [ 'x', 0.2, 1.2, 1000 ], [ 'sig', 0.05, 0.5, 100 ] ],\
 	 output_directory = 'example_almost_square2', ensure_dir = True, output_names = [ 'x_to_two_ish' ]  )
