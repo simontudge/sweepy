@@ -19,7 +19,9 @@ def almost_square( x, sig ):
 
 class survival_of_the_largest():
 	"""
-	Class defining a model which evolves integers. An integers fitness is defined as how large it is.
+	Class defining a model which evolves integers. An integer's fitness is defined
+	as how large it is.
+	
 	"""
 
 	def __init__( self, pop_size, mu, gens ):
@@ -68,7 +70,7 @@ class survival_of_the_largest():
 			self.population = new_pop
 			#list( map( self.mutate, new_pop ) )
 
-		##The fitest indivdual
+		##The fittest indivdual
 		self.max = max( self.population )
 
 		##The least fit individual
@@ -77,7 +79,7 @@ class survival_of_the_largest():
 		##The mean fitness
 		self.mean_fitness = np.mean( self.population )
 
-		##The stadard deviation of fitness
+		##The standard deviation of fitness
 		self.std_fitness = np.std( self.population )
 
 
