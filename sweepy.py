@@ -21,7 +21,8 @@ def _check_directory( directory, ensure_dir ):
 		else:
 			raise FileNotFoundError("Directory '{}' does not exists, you must set ensure_dir = True if you want me to make it for you.".format( directory ) )
 
-def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_names = None, output_directory = None, ensure_dir = False ):
+def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_names = None,\
+ output_directory = None, ensure_dir = False, file_type = 'png' ):
 	r"""
 	Function for sweeping functions. This is the one to use if the model you wish to sweep is defined as a single function.
 
@@ -58,6 +59,9 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	ensure_dir {False,True} :
 		Whether or not to create the directory if it doesn't exist. If this is set to false and the directory does not exist then FileNotFoundError will be raised
 
+	file_type str (default 'png'), optional:
+		A file extention for which to save the files. Will except anything that your version of matplotlib will take. e.g. 'png', 'eps', 'svg' 
+
 	Returns
 	-------
 
@@ -85,6 +89,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	sweep_class: wraps this functionality for use in models defined as classes rather than functions.
 
 	"""
+	##TODO check file extention exists
 
 	#Store the start time of the run
 	start_time = time.strftime("%c")
@@ -196,7 +201,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				for i,z in enumerate( value_lists[-1] ):
 					make_heatmap( d[:,:,i], title = output_names[i] )
 					if output_directory:
-						plt.savefig( os.path.join( path, "{}_{}.png".format( param_names[0], z ) ) )
+						plt.savefig( os.path.join( path, "{}_{}.{}".format( param_names[0], z, file_type ) ) )
 						plt.close()
 				if not output_directory:
 					plt.show()
@@ -208,7 +213,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				if not output_directory:
 					plt.show()
 				else:
-					plt.savefig( os.path.join( path, "{}.png".format( param_names[0] ) ) )
+					plt.savefig( os.path.join( path, "{}.{}".format( param_names[0], file_type ) ) )
 					plt.close()
 			else:
 				#Make a line graph
@@ -220,7 +225,7 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 				if not output_directory:
 					plt.show()
 				else:
-					plt.savefig( os.path.join( path, "{}.png".format( param_names[0] ) ) )
+					plt.savefig( os.path.join( path, "{}.{}".format( param_names[0], file_type ) ) )
 					plt.close()
 
 	#Handle the output of data
