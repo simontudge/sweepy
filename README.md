@@ -1,6 +1,6 @@
 #Sweepy
 
-Python module for automatic parameter sweeping of modules.
+Python module for automatic parameter sweeping of computational models.
 
 ##Why?
 

@@ -2,3 +2,4 @@ numpy
 pickle
 matplotlib
 seaborn
+tqdm
