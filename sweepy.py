@@ -23,7 +23,7 @@ def _check_directory( directory, ensure_dir ):
 			raise FileNotFoundError("Directory '{}' does not exists, you must set ensure_dir = True if you want me to make it for you.".format( directory ) )
 
 def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_outputs = 'only', output_names = None,\
- output_directory = None, ensure_dir = False, file_type = 'png' ):
+ output_directory = None, ensure_dir = False, file_type = 'png', look_for_data = False ):
 	r"""
 	Function for sweeping functions. This is the one to use if the model you wish to sweep is defined as a single function.
 
@@ -62,6 +62,9 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 
 	file_type str (default 'png'), optional:
 		A file extention for which to save the files. Will except anything that your version of matplotlib will take. e.g. 'png', 'eps', 'svg' 
+
+	look_for_data : bool {False}
+		If set for true it will look for a pre-existing pickle file, and make plots from this rather than regerneating the data.
 
 	Returns
 	-------
@@ -138,36 +141,53 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 	else:
 		output_names = [ "param_{}".format(i) for i in range( total_outputs ) ]
 
+	##Now load try to load the data from file if this option is set, otherwise
+	##Generate the data
+	if output_directory:
+		data_file =  os.path.join( output_directory, "data.p" )
+		data_exists = os.path.exists( data_file )
+	else:
+		data_exists = False
 
+	if look_for_data and data_exists:
+		print ("Found data at " + data_file)
+		print ( "Loading" )
+		data = pickle.load( open(data_file,'rb') )
+	else:
+		if look_for_data:
+			print ("No data found, generating from scratch")
+		#Create an empty container in which to put the data
+		data_size = param_lengths + [reps]
+		data = [ np.empty( tuple( data_size ) ) for i in range( total_outputs ) ]
+		
+		#Create the cartesian product of all our value lists
+		products = list(  product( *value_lists ) )
+		#Create the cartesian product of the indices of the values
+		ranges = [ range(l) for l in param_lengths ]
+		indicies = list( product(*ranges) )
+		for rep in trange(reps):
+			for index, values in zip( indicies, products ):
+				#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to
+				#pass parameter values in an order other than the function accepts.
+				parameter_dict = { n:v for n,v in zip( param_names, values ) }
+				#"append" the fixed parameter values to list of parameters
+				if fixed_params:
+					parameter_dict.update( fixed_params )
+				#Pass this dictionary to the function
+				function_outputs = func( **parameter_dict )
+				if record_outputs == 'only':
+					#Record the single output parameter in the only array
+					data[0][index][rep] = function_outputs
+				else:
+					#Otherwise strip down the outputs to the relevent ones
+					relevent_outputs = [ fo for i,fo in enumerate( function_outputs ) if record_outputs[i] ]
+					#And put them in each data array
+					for i,r in enumerate(relevent_outputs):
+						data[i][index][rep] = r
 
-	#Create an empty container in which to put the data
-	data_size = param_lengths + [reps]
-	data = [ np.empty( tuple( data_size ) ) for i in range( total_outputs ) ]
-	
-	#Create the cartesian product of all our value lists
-	products = list(  product( *value_lists ) )
-	#Create the cartesian product of the indices of the values
-	ranges = [ range(l) for l in param_lengths ]
-	indicies = list( product(*ranges) )
-	for rep in trange(reps):
-		for index, values in zip( indicies, products ):
-			#Create a dictionary of parameters to pass to the function. Using this dictionary method allows the user to
-			#pass parameter values in an order other than the function accepts.
-			parameter_dict = { n:v for n,v in zip( param_names, values ) }
-			#"append" the fixed parameter values to list of parameters
-			if fixed_params:
-				parameter_dict.update( fixed_params )
-			#Pass this dictionary to the function
-			function_outputs = func( **parameter_dict )
-			if record_outputs == 'only':
-				#Record the single output parameter in the only array
-				data[0][index][rep] = function_outputs
-			else:
-				#Otherwise strip down the outputs to the relevent ones
-				relevent_outputs = [ fo for i,fo in enumerate( function_outputs ) if record_outputs[i] ]
-				#And put them in each data array
-				for i,r in enumerate(relevent_outputs):
-					data[i][index][rep] = r
+		#Pickle dump the actual data
+		if output_directory:
+			pickle.dump( data, open( data_file, 'wb' ) )
 
 	#Take the mean of each array in data thus reducing the dimension representing the repeats
 	data_meaned = [ np.mean( d, total_sweep_params ) for d in data ]
@@ -241,8 +261,6 @@ def sweep_func( func, sweep_params, reps = 1, fixed_params = None, record_output
 			f.write( "\n\nFixed parameters:\n" )
 			f.write( "{}".format(fixed_params) )
 		f.close()
-		#Pickle dump the actual data
-		pickle.dump( data, open( os.path.join( output_directory, "data.p" ), 'wb' ) )
 
 def sweep_class( input_class, sweep_params, output_variables, reps = 1, fixed_params = None, go_func_name = 'go' , output_directory = None, ensure_dir = False ):
 	r"""Sweeps a model which is defined as a class rather than a funcion.
